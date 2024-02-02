@@ -1,50 +1,89 @@
-let products = []
-
-class ProductManager {
-    static idCounter = 1
-    constructor(title, description, price, thumbnail, code, stock) {
-        if (!title || !description || !price || !thumbnail || !code || !stock) {
-            throw new Error('Todos los campos son obligatorios.');
-        }
-        this.id=ProductManager.idCounter++
-        this.title = title
-        this.description = description
-        this.price = price
-        this.thumbnail = thumbnail
-        this.code = code
-        this.stock = stock
-
-        if (this.codeExists()) {
-            throw new Error('El código ya existe.');
-        }
+class ProductManager{
+    constructor(){
+        this.products=[]
+        this.idCounter=0
     }
-
-    // Método para verificar si el código ya existe en los productos
-    codeExists() {
-        return products.some(product => product.code === this.code);
-    }
-
-    addProduct() {
-        // Verificar que el código no esté repetido
-        if (this.codeExists()) {
-            throw new Error('El código ya existe.');
-        }
-        products.push(this);
-    }
+    addProduct(item) {
+        const { title, description, price, thumbnail, code, stock } = item;
     
-    static getProducts() {
-        return products;
+        if (!title || !description || !price || !thumbnail || !code || !stock) {
+            throw new Error("Todos los campos son obligatorios");
+        }
+        const codeExists = this.products.some(product => product.code === code);
+        if (codeExists) {
+            throw new Error("El código del producto ya existe");
+        }
+    
+        const product = {
+            id: this.idCounter++,
+            title,
+            description,
+            price,
+            thumbnail,
+            code,
+            stock
+        };
+    
+        this.products.push(product);
+        return product;
     }
-   
+    getProducts() {
+        return this.products;
+    }
+    getProductById(id) {
+        const product = this.products.find(product => product.id === id);
+        if (!product) {
+            throw new Error("Notfound");
+        }
+        return product;
+    
+    }   
 }
 
-const producto1 = new ProductManager("Título", "Descripción", 10.99, "imagen.jpg", 12, 50);
-const producto2 = new ProductManager("Título", "Descripción", 10.99, "imagen.jpg", 12, 50);
+
+//Aray vacio
+// const productManager = new ProductManager();
+// console.log(productManager.products);
+
+const manager = new ProductManager();
+
+// Agregar productos
+manager.addProduct({
+    title: "Producto 1",
+    description: "Descripción del Producto 1",
+    price: 10.99,
+    thumbnail: "producto1.jpg",
+    code: "P001",
+    stock: 100
+});
+manager.addProduct({
+    title: "Producto 2",
+    description: "Descripción del Producto 2",
+    price: 10.99,
+    thumbnail: "producto2.jpg",
+    code: "P004",
+    stock: 100
+});
+
+//Producto duplicado
+
+/*manager.addProduct({
+    title: "Producto 1",
+    description: "Descripción del Producto 1",
+    price: 10.99,
+    thumbnail: "producto1.jpg",
+    code: "P001",
+    stock: 100
+});*/
 
 
-producto1.addProduct();
-producto2.addProduct();
 
-console.log(products);
+// Imprimir el nuevo producto creado
 
+const productos = manager.getProducts();
+console.log("Todos los productos:", productos);
 
+// Obtener producto por ID
+const idProducto = 1;
+const productoPorId = manager.getProductById(idProducto);
+console.log("Producto con ID", idProducto, ":", productoPorId);
